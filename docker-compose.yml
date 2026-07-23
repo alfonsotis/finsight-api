@@ -1,0 +1,57 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: finsight_db
+    environment:
+      - POSTGRES_DB=finsight_db
+      - POSTGRES_USER=finsight_user
+      - POSTGRES_PASSWORD=finsight_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: finsight_redis
+    ports:
+      - "6379:6379"
+
+  web:
+    build: .
+    container_name: finsight_web
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./app:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=1
+      - DB_HOST=db
+      - DB_NAME=finsight_db
+      - DB_USER=finsight_user
+      - DB_PASSWORD=finsight_pass
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+
+  celery:
+    build: .
+    container_name: finsight_celery
+    command: celery -A finsight worker -l info
+    volumes:
+      - ./app:/app
+    environment:
+      - DEBUG=1
+      - DB_HOST=db
+      - DB_NAME=finsight_db
+      - DB_USER=finsight_user
+      - DB_PASSWORD=finsight_pass
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+
+volumes:
+  postgres_data:
