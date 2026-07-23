@@ -1,0 +1,37 @@
+import uuid
+from django.db import models
+
+class Portfolio(models.Model):
+    """
+    Representa un conjunto de activos financieros (ej: SPY, AAPL, NVDA)
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100)
+    tickers = models.JSONField(help_text="Lista de tickers, ej: ['AAPL', 'MSFT']")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+class AnalysisTask(models.Model):
+    """
+    Registra el estado del procesamiento asíncrono en Celery y guarda el resultado del LLM.
+    """
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('PROCESSING', 'Processing'),
+        ('COMPLETED', 'Completed'),
+        ('FAILED', 'Failed'),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE, related_name='analyses')
+    celery_task_id = models.CharField(max_length=255, blank=True, null=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    llm_insight = models.TextField(blank=True, null=True, help_text="El análisis generado por la IA")
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.portfolio.name} - {self.status}"
