@@ -1,6 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated # <--- Importar esto
 from .models import Portfolio, AnalysisTask
 from .serializers import PortfolioSerializer
 from .tasks import analyze_portfolio_task
@@ -8,6 +9,8 @@ from .tasks import analyze_portfolio_task
 class PortfolioViewSet(viewsets.ModelViewSet):
     queryset = Portfolio.objects.all()
     serializer_class = PortfolioSerializer
+    permission_classes = [IsAuthenticated] # <--- ¡El cerrojo activado!
+
 
     @action(detail=True, methods=['post'])
     def analyze(self, request, pk=None):

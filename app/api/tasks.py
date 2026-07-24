@@ -20,7 +20,7 @@ def analyze_portfolio_task(db_task_id):
         data = yf.download(tickers_str, period="1mo", group_by='ticker')
         
         raw_metrics = []
-        real_news_context = [] # <--- Aquí guardaremos la realidad
+        real_news_context = []
         
         for ticker in tickers_list:
             ticker_data = data[ticker] if len(tickers_list) > 1 else data
@@ -29,28 +29,32 @@ def analyze_portfolio_task(db_task_id):
             perf = ((end_price - start_price) / start_price) * 100
             raw_metrics.append(f"{ticker}: {perf:+.2f}%")
             
-            # 2. Descargar noticias reales recientes del ticker
+            # 2. Descargar noticias
             ticker_obj = yf.Ticker(ticker)
-            recent_news = ticker_obj.news[:3] # Tomamos las 3 últimas noticias
+            recent_news = ticker_obj.news[:3]
             for news_item in recent_news:
                 real_news_context.append(f"Noticia sobre {ticker}: {news_item.get('title', '')}")
         
-        # 3. El Prompt Antialucinaciones (RAG)
+        # --- EL TRUCO DEFENSIVO ---
+        # Si Yahoo no nos dio noticias, creamos un string claro para el LLM
+        noticias_str = chr(10).join(real_news_context) if real_news_context else "NINGUNA NOTICIA DISPONIBLE"
+        
+        # 3. El Prompt Antialucinaciones (RAG Estricto)
         prompt = f"""
         Actúa como un analista cuantitativo.
         Rendimiento mensual: {', '.join(raw_metrics)}.
         
         TITULARES DE NOTICIAS REALES DE HOY:
-        {chr(10).join(real_news_context)}
+        {noticias_str}
         
-        REGLA ESTRICTA: Redacta un insight ejecutivo (máximo 2 párrafos) explicando el rendimiento. 
-        BASA TU ANÁLISIS EXCLUSIVAMENTE en los titulares proporcionados. Si los titulares no explican la subida/bajada, indica que el movimiento es por factores de mercado no reportados recientemente. NO INVENTES razones.
+        REGLA ESTRICTA 1: Basa tu análisis EXCLUSIVAMENTE en los titulares proporcionados. NO INVENTES factores macroeconómicos, ni de tasas de interés, ni tendencias de digitalización si no están explícitamente en los titulares.
+        REGLA ESTRICTA 2: Debes citar textualmente el titular de la noticia que justifica tu análisis. Si la lista de titulares está vacía o dice "NINGUNA NOTICIA DISPONIBLE", DEBES responder exactamente esto: "No hay noticias recientes suficientes para justificar este movimiento", y detenerte ahí.
         """
         
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": "Eres un analista financiero experto. Odias la especulación y solo hablas con base en hechos."},
+                {"role": "system", "content": "Eres un analista financiero experto. Odias la especulación y solo hablas con base en hechos demostrables."},
                 {"role": "user", "content": prompt}
             ]
         )
