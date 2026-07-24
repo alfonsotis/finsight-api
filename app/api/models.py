@@ -1,3 +1,5 @@
+# Disable pyright missing-module-source reporting for environments without installed Django
+# pyright: reportMissingModuleSource=false
 import uuid
 from django.db import models
 
