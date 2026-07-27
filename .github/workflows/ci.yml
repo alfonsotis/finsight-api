@@ -1,4 +1,35 @@
-steps:
+name: FinSight CI Pipeline
+
+# 1. Cuándo se ejecuta el pipeline
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+# 2. Qué trabajos va a realizar
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest 
+
+    # 3. Servicios adicionales (Postgres en este caso)
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: finsight_db
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: adminpassword
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    # 4. Los pasos exactos adaptados a tu estructura de carpetas
+    steps:
     - name: Check out repository code
       uses: actions/checkout@v4
 
@@ -11,12 +42,10 @@ steps:
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        # Instala desde la raíz
         pip install -r requirements.txt
 
     - name: Run Ruff Linter
       run: |
-        # Entramos a app/ para que Ruff lea el ruff.toml correctamente
         cd app
         ruff check .
 
@@ -29,6 +58,5 @@ steps:
         POSTGRES_PORT: 5432
         OPENAI_API_KEY: sk-fake-key-for-testing
       run: |
-        # Entramos a app/ porque allí está pytest.ini y manage.py
         cd app
         pytest
