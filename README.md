@@ -42,6 +42,6 @@ docker compose exec web python manage.py createsuperuser
 [x] Asynchronous processing (Celery + Redis).
 [x] LLM integration with Defensive Prompt Engineering (RAG).
 [x] JWT Authentication & Multi-tenant Isolation.
-[ ] Phase 4: Unit Testing coverage (Pytest).
+[x] Phase 4: Unit Testing coverage (Pytest).
 [ ] Phase 5: CI/CD Pipeline via GitHub Actions (Linting & Testing).
 [ ] Phase 6: Cloud Deployment readiness (AWS ECS / RDS).
