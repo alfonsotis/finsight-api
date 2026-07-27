@@ -1,5 +1,7 @@
 from rest_framework import serializers
-from .models import Portfolio, AnalysisTask
+
+from .models import AnalysisTask, Portfolio
+
 
 class AnalysisTaskSerializer(serializers.ModelSerializer):
     class Meta:

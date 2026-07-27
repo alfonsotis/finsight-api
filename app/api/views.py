@@ -1,10 +1,12 @@
-from rest_framework import viewsets, status
-from rest_framework.response import Response
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
-from .models import Portfolio, AnalysisTask
+from rest_framework.response import Response
+
+from .models import AnalysisTask, Portfolio
 from .serializers import PortfolioSerializer
 from .tasks import analyze_portfolio_task
+
 
 class PortfolioViewSet(viewsets.ModelViewSet):
     # Quitamos el queryset = Portfolio.objects.all() estático

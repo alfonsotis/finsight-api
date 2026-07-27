@@ -1,6 +1,6 @@
 import pytest
-from rest_framework.test import APIClient
 from django.contrib.auth.models import User
+from rest_framework.test import APIClient
 
 # El decorador @pytest.mark.django_db le permite al test crear una base de datos 
 # de prueba vacía y destruirla al terminar, para no ensuciar tus datos reales.

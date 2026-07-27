@@ -1,7 +1,9 @@
 import os
+
 import yfinance as yf
 from celery import shared_task
 from openai import OpenAI
+
 from .models import AnalysisTask
 
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
@@ -65,5 +67,5 @@ def analyze_portfolio_task(db_task_id):
         
     except Exception as e:
         task.status = 'FAILED'
-        task.llm_insight = f"Error: {str(e)}"
+        task.llm_insight = f"Error: {e!s}"
         task.save()

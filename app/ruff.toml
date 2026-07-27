@@ -1,0 +1,7 @@
+# app/ruff.toml
+
+[lint]
+# RUF012 nos pide usar typing.ClassVar para variables de clase como 'fields' o 'serializer_class'. 
+# En Django y DRF es el estándar no usar ClassVar, así que apagamos esta regla.
+# BLE001 se queja de hacer 'except Exception:', pero en nuestras tareas asíncronas queremos atrapar TODO.
+ignore = ["RUF012", "BLE001"]
