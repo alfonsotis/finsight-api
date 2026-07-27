@@ -1,59 +1,27 @@
-name: FinSight CI Pipeline
-
-# 1. Trigger: When does this run? Every push or pull request to main.
-on:
-  push:
-    branches: [ "main", "master" ]
-  pull_request:
-    branches: [ "main", "master" ]
-
-jobs:
-  lint-and-test:
-    runs-on: ubuntu-latest # GitHub provides a free Linux virtual machine
-
-    # 2. Services: We need a temporary Database for Pytest
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_DB: finsight_db
-          POSTGRES_USER: admin
-          POSTGRES_PASSWORD: adminpassword
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-    steps:
-    # 3. Download the code into the virtual machine
+steps:
     - name: Check out repository code
       uses: actions/checkout@v4
 
-    # 4. Install Python
     - name: Set up Python 3.11
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
-        cache: 'pip' # Speeds up installation
+        cache: 'pip'
 
-    # 5. Install dependencies from our requirements.txt
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
+        # Instala desde la raíz
         pip install -r requirements.txt
 
-    # 6. Run the Linter (Checks for unused variables, bad formatting)
     - name: Run Ruff Linter
       run: |
+        # Entramos a app/ para que Ruff lea el ruff.toml correctamente
+        cd app
         ruff check .
 
-    # 7. Run the Tests (Checks our JWT and Multi-tenant security)
     - name: Run Pytest
       env:
-        # We inject fake environment variables just so Django can boot up
         POSTGRES_DB: finsight_db
         POSTGRES_USER: admin
         POSTGRES_PASSWORD: adminpassword
@@ -61,5 +29,6 @@ jobs:
         POSTGRES_PORT: 5432
         OPENAI_API_KEY: sk-fake-key-for-testing
       run: |
+        # Entramos a app/ porque allí está pytest.ini y manage.py
         cd app
         pytest
