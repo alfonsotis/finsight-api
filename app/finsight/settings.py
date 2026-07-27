@@ -77,11 +77,11 @@ WSGI_APPLICATION = 'finsight.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME', 'finsight_db'),
-        'USER': os.environ.get('DB_USER', 'finsight_user'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'finsight_pass'),
-        'HOST': os.environ.get('DB_HOST', 'db'),
-        'PORT': '5432',
+        'NAME': os.environ.get('POSTGRES_DB', 'finsight_db'),
+        'USER': os.environ.get('POSTGRES_USER', 'admin'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'adminpassword'),
+        'HOST': os.environ.get('POSTGRES_HOST', 'db'),
+        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
     }
 }
 
