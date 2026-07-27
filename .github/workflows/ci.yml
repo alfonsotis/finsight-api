@@ -43,12 +43,11 @@ jobs:
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r app/requirements.txt
+        pip install -r requirements.txt
 
     # 6. Run the Linter (Checks for unused variables, bad formatting)
     - name: Run Ruff Linter
       run: |
-        cd app
         ruff check .
 
     # 7. Run the Tests (Checks our JWT and Multi-tenant security)
