@@ -14,3 +14,7 @@ class PortfolioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Portfolio
         fields = ['id', 'name', 'tickers', 'analyses', 'created_at']
+
+
+class EmptySerializer(serializers.Serializer):
+    pass

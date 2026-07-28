@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import AnalysisTask, Portfolio
-from .serializers import PortfolioSerializer
+from .serializers import EmptySerializer, PortfolioSerializer
 from .tasks import analyze_portfolio_task
 
 
@@ -22,7 +22,7 @@ class PortfolioViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
     # 3. El método analyze() queda exactamente igual que lo tenías
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=['post'], serializer_class=EmptySerializer)
     def analyze(self, request, pk=None):
         portfolio = self.get_object()
         analysis_task = AnalysisTask.objects.create(portfolio=portfolio)
