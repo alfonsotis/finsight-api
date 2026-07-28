@@ -9,19 +9,19 @@ from .tasks import analyze_portfolio_task
 
 
 class PortfolioViewSet(viewsets.ModelViewSet):
-    # Quitamos el queryset = Portfolio.objects.all() estático
+    # Remove the static queryset = Portfolio.objects.all()
     serializer_class = PortfolioSerializer
     permission_classes = [IsAuthenticated]
 
-    # 1. AISLAMIENTO DE LECTURA: Solo devuelve los portafolios del usuario actual
+    # 1. READ ISOLATION: Only return portfolios for the current user
     def get_queryset(self):
         return Portfolio.objects.filter(user=self.request.user)
 
-    # 2. AISLAMIENTO DE ESCRITURA: Al crear un portafolio, asígnale el usuario actual
+    # 2. WRITE ISOLATION: Assign the current user when creating a portfolio
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-    # 3. El método analyze() queda exactamente igual que lo tenías
+    # 3. The analyze() method stays exactly the same as before
     @action(detail=True, methods=['post'], serializer_class=EmptySerializer)
     def analyze(self, request, pk=None):
         portfolio = self.get_object()

@@ -1,18 +1,18 @@
 name: FinSight CI Pipeline
 
-# 1. Cuándo se ejecuta el pipeline
+# 1. When the pipeline runs
 on:
   push:
     branches: [ "main", "master" ]
   pull_request:
     branches: [ "main", "master" ]
 
-# 2. Qué trabajos va a realizar
+# 2. What jobs it will perform
 jobs:
   lint-and-test:
     runs-on: ubuntu-latest 
 
-    # 3. Servicios adicionales (Postgres en este caso)
+    # 3. Additional services (Postgres in this case)
     services:
       postgres:
         image: postgres:15
@@ -30,7 +30,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
-    # 4. Los pasos exactos adaptados a tu estructura de carpetas
+    # 4. The exact steps adapted to your folder structure
     steps:
     - name: Check out repository code
       uses: actions/checkout@v4

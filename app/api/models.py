@@ -8,7 +8,7 @@ from django.db import models
 
 class Portfolio(models.Model):
     """
-    Representa un conjunto de activos financieros (ej: SPY, AAPL, NVDA)
+    Represents a set of financial assets (e.g. SPY, AAPL, NVDA)
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -21,7 +21,7 @@ class Portfolio(models.Model):
 
 class AnalysisTask(models.Model):
     """
-    Registra el estado del procesamiento asíncrono en Celery y guarda el resultado del LLM.
+    Tracks the asynchronous Celery processing state and stores the LLM result.
     """
     STATUS_CHOICES = [
         ('PENDING', 'Pending'),

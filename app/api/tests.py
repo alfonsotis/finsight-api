@@ -2,29 +2,29 @@ import pytest
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 
-# El decorador @pytest.mark.django_db le permite al test crear una base de datos 
-# de prueba vacía y destruirla al terminar, para no ensuciar tus datos reales.
+# The @pytest.mark.django_db decorator lets the test create a temporary database
+# and destroy it when finished, so it doesn't pollute your real data.
 
 @pytest.mark.django_db
 def test_unauthenticated_user_cannot_access_portfolios():
     client = APIClient()
-    # Intentamos entrar sin Token
+    # Try to access without a token
     response = client.get('/api/v1/portfolios/')
     
-    # Esperamos que el servidor nos dé un portazo (HTTP 401)
+    # We expect the server to reject the request (HTTP 401)
     assert response.status_code == 401
 
 @pytest.mark.django_db
 def test_authenticated_user_sees_empty_list():
-    # 1. Arrange (Preparar)
+    # 1. Arrange
     user = User.objects.create_user(username='testuser', password='testpassword')
     client = APIClient()
-    client.force_authenticate(user=user) # Simulamos que tiene un JWT válido
+    client.force_authenticate(user=user) # Simulate a valid JWT
     
-    # 2. Act (Actuar)
+    # 2. Act
     response = client.get('/api/v1/portfolios/')
     
-    # 3. Assert (Comprobar)
+    # 3. Assert
     assert response.status_code == 200
-    # Como es un usuario nuevo, el aislamiento Multi-tenant debe devolver []
+    # Since this is a new user, the multi-tenant isolation should return []
     assert response.json() == []

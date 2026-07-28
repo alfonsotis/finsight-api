@@ -144,7 +144,7 @@ REST_FRAMEWORK = {
     ),
 }
 
-# SimpleJWT Configuration (Opcional, pero buena práctica)
+# SimpleJWT configuration (optional, but best practice)
 from datetime import timedelta
 
 SIMPLE_JWT = {
@@ -154,14 +154,14 @@ SIMPLE_JWT = {
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication', # Para la API B2B
-        'rest_framework.authentication.SessionAuthentication',       # Para ti, en el navegador
+        'rest_framework_simplejwt.authentication.JWTAuthentication', # For the B2B API
+        'rest_framework.authentication.SessionAuthentication',       # For browser access
     ),
 }
 
 STATIC_URL = 'static/'
 
-# La carpeta donde Django agrupará los archivos (¡Esto es lo que faltaba!)
+# The folder where Django will collect static files (this was missing!)
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-# WhiteNoise para comprimir y cachear
+# WhiteNoise to compress and cache files
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
