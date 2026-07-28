@@ -1,9 +1,7 @@
 import os
-
 import yfinance as yf
 from celery import shared_task
 from openai import OpenAI
-
 from .models import AnalysisTask
 
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
@@ -35,10 +33,14 @@ def analyze_portfolio_task(db_task_id):
             ticker_obj = yf.Ticker(ticker)
             recent_news = ticker_obj.news[:3]
             for news_item in recent_news:
-                real_news_context.append(f"Noticia sobre {ticker}: {news_item.get('title', '')}")
+                # EL FIX ESTÁ AQUÍ: Extraemos el título del sub-diccionario 'content'
+                title = news_item.get('content', {}).get('title') or news_item.get('title', '')
+                
+                # Solo lo agregamos si realmente hay texto
+                if title:
+                    real_news_context.append(f"Noticia sobre {ticker}: {title}")
         
         # --- EL TRUCO DEFENSIVO ---
-        # Si Yahoo no nos dio noticias, creamos un string claro para el LLM
         noticias_str = chr(10).join(real_news_context) if real_news_context else "NINGUNA NOTICIA DISPONIBLE"
         
         # 3. El Prompt Antialucinaciones (RAG Estricto)
