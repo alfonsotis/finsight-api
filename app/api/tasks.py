@@ -1,7 +1,9 @@
 import os
+
 import yfinance as yf
 from celery import shared_task
 from openai import OpenAI
+
 from .models import AnalysisTask
 
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
