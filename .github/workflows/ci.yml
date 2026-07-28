@@ -17,11 +17,9 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          DB_NAME: finsight_db
-          DB_USER: admin
-          DB_PASSWORD: adminpassword
-          DB_HOST: localhost
-          SECRET_KEY: fake-key-for-testing
+          POSTGRES_DB: finsight_db
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: adminpassword
         ports:
           - 5432:5432
         options: >-
@@ -53,13 +51,11 @@ jobs:
 
     - name: Run Pytest
       env:
-        POSTGRES_DB: finsight_db
-        POSTGRES_USER: admin
-        POSTGRES_PASSWORD: adminpassword
-        POSTGRES_HOST: localhost
-        POSTGRES_PORT: 5432
-        OPENAI_API_KEY: sk-fake-key-for-testing
-        SECRET_KEY: this-is-a-fake-key-for-github-actions
+        DB_NAME: finsight_db
+        DB_USER: admin
+        DB_PASSWORD: adminpassword
+        DB_HOST: localhost
+        SECRET_KEY: fake-key-for-testing
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       run: |
-        cd app
-        pytest
+        poetry run pytest
