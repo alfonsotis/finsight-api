@@ -19,13 +19,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-0f!r3%gw#z&y5^%z%bipehcbr)sgcsp#o-z++jpd(6_)pm&_wq'
+# Securely read the secret key from the environment
+SECRET_KEY = os.environ.get('SECRET_KEY', 'unsafe-fallback-key-for-dev')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Default to False if the environment variable is not set (Secure)
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['*']
+# Allow access from any host by default, or accept a comma-separated list of specific hosts
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
 
 # Application definition
@@ -43,6 +45,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -77,11 +80,11 @@ WSGI_APPLICATION = 'finsight.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DB', 'finsight_db'),
-        'USER': os.environ.get('POSTGRES_USER', 'admin'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'adminpassword'),
-        'HOST': os.environ.get('POSTGRES_HOST', 'db'),
-        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+        'NAME': os.environ.get('DB_NAME', 'finsight_db'),
+        'USER': os.environ.get('DB_USER', 'finsight_user'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'finsight_pass'),
+        'HOST': os.environ.get('DB_HOST', 'db'),
+        'PORT': '5432',
     }
 }
 
@@ -120,7 +123,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -155,3 +158,10 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',       # Para ti, en el navegador
     ),
 }
+
+STATIC_URL = 'static/'
+
+# La carpeta donde Django agrupará los archivos (¡Esto es lo que faltaba!)
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+# WhiteNoise para comprimir y cachear
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'

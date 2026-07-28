@@ -14,3 +14,6 @@ COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY ./app /app/
+
+# Ejecute Gunicorn in port 8000 with 3 paral processes (workers)
+CMD ["gunicorn", "finsight.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]

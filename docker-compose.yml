@@ -20,13 +20,12 @@ services:
   web:
     build: .
     container_name: finsight_web
-    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./app:/app
     ports:
       - "8000:8000"
     environment:
-      - DEBUG=1
+      - DEBUG=True
       - DB_HOST=db
       - DB_NAME=finsight_db
       - DB_USER=finsight_user
@@ -44,7 +43,7 @@ services:
     volumes:
       - ./app:/app
     environment:
-      - DEBUG=1
+      - DEBUG=True
       - DB_HOST=db
       - DB_NAME=finsight_db
       - DB_USER=finsight_user
