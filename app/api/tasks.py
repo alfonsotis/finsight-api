@@ -16,7 +16,7 @@ def analyze_portfolio_task(db_task_id):
         tickers_list = task.portfolio.tickers
         tickers_str = " ".join(tickers_list)
         
-        # 1. Bajar datos de precios
+        # 1. Download price data
         data = yf.download(tickers_str, period="1mo", group_by='ticker')
         
         raw_metrics = []
@@ -29,21 +29,21 @@ def analyze_portfolio_task(db_task_id):
             perf = ((end_price - start_price) / start_price) * 100
             raw_metrics.append(f"{ticker}: {perf:+.2f}%")
             
-            # 2. Descargar noticias
+            # 2. Download news
             ticker_obj = yf.Ticker(ticker)
             recent_news = ticker_obj.news[:3]
             for news_item in recent_news:
-                # EL FIX ESTÁ AQUÍ: Extraemos el título del sub-diccionario 'content'
+                # THE FIX IS HERE: We extract the title from the sub-dictionary 'content'
                 title = news_item.get('content', {}).get('title') or news_item.get('title', '')
                 
-                # Solo lo agregamos si realmente hay texto
+                # We only add it if it actually contains text
                 if title:
                     real_news_context.append(f"Noticia sobre {ticker}: {title}")
         
-        # --- EL TRUCO DEFENSIVO ---
+        # --- THE DEFENSIVE WORKAROUND ---
         noticias_str = chr(10).join(real_news_context) if real_news_context else "NINGUNA NOTICIA DISPONIBLE"
         
-        # 3. El Prompt Antialucinaciones (RAG Estricto)
+        # 3. The Anti-Hallucination Prompt (Strict RAG)
         prompt = f"""
         Actúa como un analista cuantitativo.
         Rendimiento mensual: {', '.join(raw_metrics)}.
